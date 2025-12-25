@@ -14,7 +14,7 @@ import sys
 
 
 # Configuration
-CSV_PATH = "csvs/outreach_companies.csv"
+CSV_PATH = "sample.csv"
 
 SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 587

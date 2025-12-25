@@ -34,8 +34,7 @@ This toolkit automates the process of generating personalized cold outreach emai
     ```
 3.  **Prepare Data**:
     -   Open `generate_emails.py` and set `YOUR_NAME`, `YOUR_ROLE`, and `VALUE_PROPOSITION` to customize the email generation.
-    -   Create a folder named `csvs`.
-    -   Create a file `csvs/outreach_companies.csv` based on the `sample.csv` format.
+    -   Create a file `sample.csv` (or use the provided one).
     -   Required columns: `Organisation Name`, `Description`, `Emails`.
 
 ## User Guide
@@ -70,7 +69,7 @@ python generate_emails.py
 
 ### 4. Review & Edit
 **Crucial Step**: AI isn't perfect.
-1.  Open `csvs/outreach_companies.csv` in Excel or Numbers.
+1.  Open `sample.csv` in Excel or Numbers.
 2.  Read the `email_body` column.
 3.  Make any manual edits directly in the CSV if an email sounds off.
 4.  Save the CSV.
