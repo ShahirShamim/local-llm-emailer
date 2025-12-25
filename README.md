@@ -38,41 +38,71 @@ This toolkit automates the process of generating personalized cold outreach emai
     -   Create a file `csvs/outreach_companies.csv` based on the `sample.csv` format.
     -   Required columns: `Organisation Name`, `Description`, `Emails`.
 
-## Usage
+## User Guide
 
-### 1. Generate Drafts
+### 1. Prepare Your Data
+The system needs a list of companies to target.
+1.  Navigate to the `csvs/` directory.
+2.  Create or overwrite `outreach_companies.csv`.
+3.  Ensure your CSV has **exactly** these headers:
+    -   `Organisation Name`: Name of the company.
+    -   `Description`: A sentence or two about what they do (used by AI to personalize).
+    -   `Emails`: The contact email address.
 
-Run the generation script to create personalized email drafts for each company in your CSV.
+    *Example in `sample.csv`*.
 
+### 2. Customize the AI
+Make the AI write like YOU.
+1.  Open `generate_emails.py`.
+2.  Edit the variables at the top:
+    -   `YOUR_NAME`: Your full name (e.g., "Jane Doe").
+    -   `YOUR_ROLE`: Your target role (e.g., "Full Stack Developer").
+    -   `VALUE_PROPOSITION`: Your unique hook (e.g., "specializing in scalable Python backends").
+    -   `MODEL`: The Ollama model to use (default: `llama3.1:8b`).
+
+### 3. Generate Drafts
+Run the generator to let the AI draft emails for you.
 ```bash
 python generate_emails.py
 ```
+-   **What happens**: The script reads your CSV, calls Ollama for each company, and writes the `email_subject` and `email_body` into new columns in the same CSV.
+-   **Resumable**: If you stop the script, running it again will skip companies that already have generated drafts.
 
-This will:
--   Read companies from `csvs/outreach_companies.csv`.
--   Generate a subject and body for each.
--   Save the drafts back to the CSV in new columns (`email_subject`, `email_body`).
+### 4. Review & Edit
+**Crucial Step**: AI isn't perfect.
+1.  Open `csvs/outreach_companies.csv` in Excel or Numbers.
+2.  Read the `email_body` column.
+3.  Make any manual edits directly in the CSV if an email sounds off.
+4.  Save the CSV.
 
-### 2. Review Drafts (Optional but Recommended)
+### 5. Dry Run (Safety Check)
+Before sending real emails, send them to yourself to check formatting.
+```bash
+python send_emails.py --dry-run
+```
+-   This processes the first 10 companies.
+-   It **REPLACES** the recipient with YOUR email (the `SMTP_USER` configured in `send_emails.py`).
+-   Check your inbox to ensure the formatting looks professional.
 
-Open `csvs/outreach_companies.csv` and review the generated `email_subject` and `email_body` columns. You can manually edit them if needed.
-
-### 3. Send Emails
-
-Run the sending script to dispatch the emails.
-
+### 6. Send Live Emails
+Ready to go?
 ```bash
 python send_emails.py
 ```
+-   **Safety**: Sends 1 email every 30 seconds to avoid spam flags.
+-   **Tracking**: Updates the `sent_at` column in your CSV.
+-   **Stopping**: Press `Ctrl+C` safely at any time.
 
-**Options:**
--   `--dry-run`: Sends emails to YOURSELF (the sender) to test formatting and content.
-    ```bash
-    python send_emails.py --dry-run
-    ```
--   `--retry-fails`: Retries sending to companies that previously failed.
+### 7. Retry Failures
+If the script crashes or network fails:
+```bash
+python send_emails.py --retry-fails
+```
+-   This targets only companies marked as `FAILED` in the `sent_at` column.
 
-## Notes
+## Troubleshooting
 
--   **Model Selection**: You can change the `MODEL` variable in `generate_emails.py` to use other Ollama models (e.g., `mistral`, `gemma`).
--   **Rate Limiting**: The sending script has built-in delays (30 seconds) to avoid spam filters.
+-   **"Ollama not found"**: Ensure Ollama is running in the background (`ollama serve`).
+-   **"Connection Refused"**: Check your internet and SMTP credentials.
+-   **"Invalid Email"**: The script automatically skips malformed email addresses and marks them in the CSV.
+
